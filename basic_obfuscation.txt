@@ -1,0 +1,27 @@
+Problem is to decode the following message:
+
+3xvsw8su9k7xlcq39w38uv33q5u5dt260uwb81mwnjjeiku8emau2788t
+
+The message consists of letters and numbers, and the letters in
+the encrypted message are fairly evenly spread across all of the letters and numbers.
+
+This suggested base36 encoding:
+
+>>> i = int('3xvsw8su9k7xlcq39w38uv33q5u5dt260uwb81mwnjjeiku8emau2788t',36)
+>>> x = "%x" % i
+>>> print x
+b4529bf40069e45d544cbf4ce15dcb1f781f9e8aa171da562104016aba587302bba75bf7d
+
+That doesn't look like ASCII.
+
+However, there is no y and z in the encrypted message, so base 34 or 35 might work:
+
+>>> i = int('3xvsw8su9k7xlcq39w38uv33q5u5dt260uwb81mwnjjeiku8emau2788t',34)
+>>> x = "%x" % i
+>>> print x
+77335f753565645f615f6434727462306172645f74305f7031636b5f7468335f62347365
+>>> binascii.unhexlify(x)
+'w3_u5ed_a_d4rtb0ard_t0_p1ck_th3_b4se'
+
+It turns out it is base-34.
+

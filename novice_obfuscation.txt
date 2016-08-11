@@ -1,0 +1,88 @@
+Problem is to decode the following string:
+
+zccnxyzbxpcclqzczlxszcczxhzkzlzkcncbxmlqxcxhzbxdcczszclqckzsxllqxyckxmzhlqzbcczsxyzlczcdxnzkxhxqxmcllqcbxxlqzbxdzlxmbv
+
+I solved this one through some mental gymnastics.
+
+Looking at this string, I noticed the following:
+
+* There are only 15 different characters.
+* 'z', 'c', and 'x' appear a lot.
+* If I break up characters into groups of two, the first
+  letter is always z,c or x, except for 'lq' and 'bv'.
+* The 'lq' pair appears 7 times in the message.
+
+From the above, I guessed that this was a substitution to
+turn the 15 characters into hexadecimal characters, converting
+the string to ASCII, and that furthermore, 'lq' is probably '_',
+as this is the character that shows up between words in many of the keys.
+
+So, 'l' => '5' and 'q' => 'f'.
+
+'c', 'x', and 'z' are in the set ('3', '4', '6', '7'), as those are the
+start of the ASCII numers, lowercase and uppercase letters, which is why
+they appear so often, and appear as the first letter of each double letter pair.
+
+I also noticed that there was a potential two letter word here:
+  ...lqcbxxlq...  => "..._??_..."
+The potential two letter word "cbxx" also has a double letter.
+'xx' could translate to '3', 'D', 'f', or 'w'.
+'xx' only appears once in the message, while another double letter sequence, 'cc', appears three times.
+In the answer, the number '3' is most likely to appear more than once,
+so 'cc' is more likely to be a '3' than 'xx'.
+If 'xx' => 'f', then that could be the second letter of the word "of".
+
+I'll guess that 'c' => '3' and "cbxx" => "0f".
+So, 'x' => '6', 'c' => '3' and 'b' => '0'
+
+A further guess that 'z' => '7' to get the upper letters of the alphabet gives the following:
+
+example.py:
+
+import binascii
+
+a = 'zccnxyzbxpcclqzczlxszcczxhzkzlzkcncbxmlqxcxhzbxdcczszclqckzsxllqxyckxmzhlqzbcczsxyzlczcdxnzkxhxqxmcllqcbxxlqzbxdzlxmbv'
+
+d = {
+    # the underscore
+    'l': '5',
+    'q': 'f',
+    # the starting characters of letters/numbers
+    'z': '7',
+    'x': '6',
+    'c': '3',
+    # and the rest
+    'b': '0',
+    'k': '-',
+    'h': '-',
+    's': '-',
+    'n': '-',
+    'd': '-',
+    'y': '-',
+    'p': '-',
+    'm': '-',
+    'v': '-'
+}
+
+def convertit(c):
+    return d[c]
+
+
+b = ''.join([convertit(x) for x in a])
+c = ""
+for i in range(len(b)/2):
+    q = b[(i*2):((i+1)*2)]
+    if q[0] == '-' or q[1] == '-':
+        c = c + '*'
+    else:
+        x = binascii.unhexlify(q)
+        c = c + x
+
+print c
+
+$ python u.py
+s**p*3_su*s7**u**0*_c*p*3*s_**e_****_p3**u7****o*5_0f_p*u**
+
+The second word looks like "substitution", and the rest starts to fall into place:
+
+s1mpl3_subs7itut10n_ciph3rs_4re_m4ny_p3rmu78ation5_0f_phun
